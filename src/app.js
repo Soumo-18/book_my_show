@@ -9,8 +9,9 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express();
 
-app.use(cors());
 app.use(express.json());
+app.use(cors());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
 
 app.get('/',(req,res)=>{

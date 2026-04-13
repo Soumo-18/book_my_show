@@ -14,4 +14,6 @@ router.post('/login', validate(LoginDto), controller.login)
 
 router.get('/me', authenticate, controller.getMe)
 
+router.post('/logout', controller.logout)
+
 export default router

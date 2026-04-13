@@ -17,7 +17,7 @@
   <body
     class="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
   >
-    <div
+    <!-- <div
       class="max-w-7xl w-full bg-slate-800/80 backdrop-blur-xl rounded-3xl shadow-2xl p-10 border border-slate-700/50"
     >
       <div class="text-center mb-10">
@@ -65,9 +65,133 @@
           ></table>
         </div>
       </div>
+    </div> -->
+
+
+<div id="auth-section" class="max-w-md w-full bg-slate-800/80 backdrop-blur-xl rounded-3xl shadow-2xl p-10 border border-slate-700/50 mx-auto mt-20">
+    <h2 class="text-3xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 mb-8">Welcome</h2>
+    
+    <form id="login-form" class="flex flex-col gap-4">
+        <input type="email" id="login-email" placeholder="Email" class="p-3 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-emerald-500" required>
+        <input type="password" id="login-password" placeholder="Password" class="p-3 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-emerald-500" required>
+        <button type="submit" class="bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-3 rounded-xl transition-all">Log In</button>
+    </form>
+
+    <form id="register-form" class="flex flex-col gap-4 hidden">
+        <input type="text" id="reg-name" placeholder="Full Name" class="p-3 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-emerald-500" required>
+        <input type="email" id="reg-email" placeholder="Email" class="p-3 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-emerald-500" required>
+        <input type="password" id="reg-password" placeholder="Password (Min 8 chars, 1 Upp, 1 Num)" class="p-3 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-emerald-500" required>
+        <button type="submit" class="bg-cyan-500 hover:bg-cyan-400 text-white font-bold py-3 rounded-xl transition-all">Register</button>
+    </form>
+
+    <div class="text-center mt-6">
+        <button id="toggle-auth" class="text-slate-400 hover:text-white text-sm transition-colors">Need an account? Register</button>
+    </div>
+</div>
+
+<div id="booking-section" class="max-w-7xl w-full bg-slate-800/80 backdrop-blur-xl rounded-3xl shadow-2xl p-10 border border-slate-700/50 hidden mt-10 mx-auto">
+    <div class="flex justify-end mb-4">
+        <button id="logout-btn" class="text-rose-400 hover:text-rose-300 border border-rose-500/30 px-4 py-2 rounded-lg transition-all">Logout</button>
+    </div>
+    
+    <div class="text-center mb-10">
+        <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 mb-4 tracking-tight">ChaiCode Cinema</h1>
     </div>
 
+    <div class="flex justify-center">
+        <div class="bg-slate-900/40 p-8 rounded-2xl border border-slate-700/50 shadow-inner">
+            <table id="tbl" class="border-separate border-spacing-4 mx-auto"></table>
+        </div>
+    </div>
+</div>
+
+
     <script>
+
+const authsection = document.getElementById('auth-section')
+const bookingSection = document.getElementById('booking-section')
+const toggleBtn = document.getElementById('toggle-auth')
+let isLogin = true
+
+async function checkAuth(){
+  try{
+    const res= await fetch('/api/auth/me')
+    if(res.ok){
+      authsection.classList.add('hidden')
+      bookingSection.classList.remove('hidden')
+      run()
+    } else { 
+      authsection.classList.remove('hidden')
+      bookingSection.classList.add('hidden')
+    }
+  } catch (error){
+    console.error("Authentication Failed")
+  }
+}
+
+toggleBtn.addEventListener('click',()=>{
+  isLogin= !isLogin
+  document.getElementById('login-form').classList.toggle('hidden', !isLogin)
+  document.getElementById('register-form').classList.toggle('hidden', isLogin)
+  toggleBtn.innerText = isLogin? "Need an Account ? Register" : "Already Have An Account ? Log In"
+
+})
+
+document.getElementById('login-form').addEventListener('submit', async(e)=>{
+  e.preventDefault()
+  const email = document.getElementById('login-email').value
+  const pass = document.getElementById('login-password').value 
+
+  const res = await fetch('/api/auth/login',{
+    method:'POST',
+    headers:{ 'Content-Type': 'application/json'},
+    body: JSON.stringify({email:email,password:pass})
+  })
+
+  if(res.ok) {
+    checkAuth()
+  } else {
+    const data = await res.json()
+    alert("Log In Failed" + (data.error || data.message))
+  }
+})
+
+document.getElementById('register-form').addEventListener('submit', async(e)=>{
+  e.preventDefault()
+  const name = document.getElementById('reg-name').value
+  const email = document.getElementById('reg-email').value
+  const pass = document.getElementById('reg-password').value
+
+  const res= await fetch('/api/auth/register',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ name:name,email:email,password:pass})
+  })
+
+  if(res.ok || res.status===201){
+    alert('Registration Successful✅ Please Log In🌹')
+    toggleBtn.click() //switching back to login view
+  } else {
+    const data = await res.json()
+    alert('Registration Failed ' +(data.error || data.message))
+  }
+
+})
+
+document.getElementById('logout-btn').addEventListener('click', async()=>{
+  await fetch('/api/auth/logout', {
+    method:'POST'
+  })
+
+  checkAuth() //hiding cinema and showing login again
+})
+
+checkAuth()
+
+
+
+
+
       async function run() {
         const tbl = document.getElementById("tbl");
         const res = await fetch("/seats");
@@ -145,7 +269,20 @@
           tbl.appendChild(tr);
         }
       }
-      run();
+      // run();
     </script>
   </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+

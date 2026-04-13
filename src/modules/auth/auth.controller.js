@@ -34,3 +34,11 @@ export const getMe = async(req,res,next) => {
         next(err)
     }
 }
+export const logout = async(req,res) =>{
+    res.clearCookie('accessToken')
+    return res.status(200).json({
+        success:true,
+        message:"Logged Out Successfully"
+    })
+
+}
