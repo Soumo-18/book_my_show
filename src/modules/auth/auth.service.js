@@ -1,7 +1,7 @@
-import bcypt from 'bcryptjs'
+import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import pool from '../../common/config/db.js'
-// import ApiError from '../../common/utils/api-error.js'
+import ApiError from '../../common/utils/api-error.js'
 
 export const register = async ({ name,email,password}) => {
     //if the user exists
@@ -15,7 +15,7 @@ export const register = async ({ name,email,password}) => {
     //insert into db, return the new user without password 
     const insertSql = `
     INSERT INTO users (name,email,password)
-    VALUES($!,$2,$3)
+    VALUES($1,$2,$3)
     RETURNING id,name,email
     `
 
@@ -32,7 +32,7 @@ export const login = async({email,password}) =>{
     
     const user = users[0]
 
-    const isMatch = await bcypt.compare(password,user.password)
+    const isMatch = await bcrypt.compare(password,user.password)
     if (!isMatch) throw ApiError.unauthorized("Invalid Email OR Password");
 
     //token generate 
@@ -46,4 +46,14 @@ export const login = async({email,password}) =>{
 delete user.password
 return { user, accessToken}
 
+}
+
+export const getMe = async(userId) =>{
+    const sql = "SELECT id,name,email FROM users WHERE id=$1"
+    const {rows}= await pool.query(sql,[userId  ])
+    if(rows.length===0) {
+        throw ApiError.notFound("User Not Found")
+    }
+    return rows[0]
+    
 }
