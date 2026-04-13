@@ -3,12 +3,11 @@ import ApiError from '../../common/utils/api-error.js'
 
 export const authenticate = async(req,res,next) =>{
     try{
-        const authHeader = req.headers.authorization
-        if(!authHeader || !authHeader.startsWith('Bearer')) {
+        const token = req.cookies.accessToken        
+        if(!token) {
             throw ApiError.unauthorized('Not authenticated')
         }
 
-        const token = authHeader.split(' ')[1]
         const decoded = jwt.verify(token,process.env.JWT_SECRET || 'fallback_secret')
 
         req.user = decoded

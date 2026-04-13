@@ -13,7 +13,12 @@ export const register = async(req,res,next) =>{
 export const login = async(req,res,next)=>{
     try{
         const {user,accessToken} = await authService.login(req.body)
-        return ApiResponse.ok(res, 'Login Successful', {user,accessToken})
+        res.cookie('accessToken', accessToken, {
+            httpOnly :true,
+            secure:process.env.NODE_ENV === 'production',
+            maxAge: 24*60*60*1000 //For 1 day
+        })
+        return ApiResponse.ok(res, 'Login Successful', {user})
     } catch(err){
         next(err)
     }

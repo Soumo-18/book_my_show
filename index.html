@@ -111,18 +111,11 @@
 
 
 
-              const token = localStorage.getItem("accessToken")
-              const res = await fetch(`/${id}/${name}`, {
-                method:"PUT",
-                headers:{
-                  'Authorization':`Bearer ${token}`,
-                  'Content-Type':'application/json'
-                }
-              })
+              
 
 
 
-              // const res = await fetch(`/${id}/${name}`, { method: "PUT" });
+              const res = await fetch(`/${id}/${name}`, { method: "PUT" });
               const data = await res.json();
 
               if (data.error) {
