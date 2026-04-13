@@ -9,7 +9,7 @@ router.get('/seats', controller.getSeats)
 
 // PUT -> /:id/:name Protected 
 
-router.put('/:id/:name', authenticate,controller.bookSeat)
+router.put('/:id/:name', authenticate, controller.bookSeat);
 
 
 

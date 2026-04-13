@@ -126,7 +126,11 @@
               const data = await res.json();
 
               if (data.error) {
-                alert("FAILED! Couldn't book! already booked.");
+                if (res.status === 401) {
+                    alert("Please login or authenticate first!");
+                } else {
+                      alert("FAILED! " + data.error);
+                 }
               } else {
                 alert("Booked successfully!");
                 // Visually transition to booked state upon success

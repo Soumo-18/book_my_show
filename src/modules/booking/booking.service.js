@@ -12,7 +12,7 @@ export const bookSeat = async(seatId, userId, userName) =>{
     try {
         await conn.query("BEGIN")
         
-        const checkSql = "SELECT * FROM seats WHERE id = $1 AND isBooked = 0 FOR UPDATE"
+        const checkSql = "SELECT * FROM seats WHERE id = $1 AND isbooked = 0 FOR UPDATE"
         const result = await conn.query(checkSql, [seatId])
 
         if(result.rowCount === 0) {

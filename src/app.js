@@ -5,7 +5,7 @@ import bookingRoutes from './modules/booking/booking.routes.js';
 import cookieParser from 'cookie-parser';
 import path from 'path'
 import { fileURLToPath } from 'url';
-import authRoutes  from './modules/auth/auth.routes.js'
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express();
 
@@ -18,5 +18,13 @@ app.get('/',(req,res)=>{
 })
 app.use('/api/auth', authRoutes);
 app.use('/', bookingRoutes);
+
+app.use((err,req,res,next)=> {
+    const statusCode = err.statusCode || 500
+    res.status(statusCode).json({
+        success:false,
+        error:err.message || "Internal Server Error"
+    })
+})
 
 export default app;

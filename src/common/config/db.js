@@ -5,7 +5,7 @@ const pool = new pg.Pool({
     port: process.env.DB_PORT || 5433,
     user: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASSWORD || 'postgres',
-    databse: process.env.DB_NAME || 'sql_class_2_db',
+    database: process.env.DB_NAME || 'sql_class_2_db',
     max:20,
 })
 
