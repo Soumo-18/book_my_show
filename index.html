@@ -115,7 +115,7 @@ let isLogin = true
 
 async function checkAuth(){
   try{
-    const res= await fetch('/api/auth/me')
+    const res= await fetch('/api/auth/me', { credentials: 'include' })
     if(res.ok){
       authsection.classList.add('hidden')
       bookingSection.classList.remove('hidden')
@@ -145,14 +145,15 @@ document.getElementById('login-form').addEventListener('submit', async(e)=>{
   const res = await fetch('/api/auth/login',{
     method:'POST',
     headers:{ 'Content-Type': 'application/json'},
-    body: JSON.stringify({email:email,password:pass})
+    body: JSON.stringify({email:email,password:pass}),
+    credentials: 'include'
   })
 
   if(res.ok) {
     checkAuth()
   } else {
     const data = await res.json()
-    alert("Log In Failed" + (data.error || data.message))
+    alert("Log In Failed: " + (data.error || data.message))
   }
 })
 
@@ -165,7 +166,8 @@ document.getElementById('register-form').addEventListener('submit', async(e)=>{
   const res= await fetch('/api/auth/register',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ name:name,email:email,password:pass})
+    body: JSON.stringify({ name:name,email:email,password:pass}),
+    credentials: 'include'
   })
 
   if(res.ok || res.status===201){
@@ -180,7 +182,8 @@ document.getElementById('register-form').addEventListener('submit', async(e)=>{
 
 document.getElementById('logout-btn').addEventListener('click', async()=>{
   await fetch('/api/auth/logout', {
-    method:'POST'
+    method:'POST',
+    credentials: 'include'
   })
 
   checkAuth() //hiding cinema and showing login again
@@ -194,7 +197,9 @@ checkAuth()
 
       async function run() {
         const tbl = document.getElementById("tbl");
-        const res = await fetch("/seats");
+        tbl.innerHTML = ''
+
+        const res = await fetch("/api/seats", { credentials: 'include' });
         const resarray = await res.json();
         const j = resarray.sort((a, b) => a.id - b.id);
         let tr;
@@ -239,18 +244,26 @@ checkAuth()
 
 
 
-              const res = await fetch(`/${id}/${name}`, { method: "PUT" });
+              // const res = await fetch(`/${id}/${name}`, { method: "PUT" });
+              const res = await fetch(`/api/seats/${id}`,{
+                method:'PUT',
+                headers:{
+                  'Content-Type': 'application/json'
+                },
+                body : JSON.stringify({name:name}),
+                credentials: 'include'
+              })
               const data = await res.json();
 
-              if (data.error) {
+         if (!res.ok || data.error) {
                 if (res.status === 401) {
-                    alert("Please login or authenticate first!");
+                    alert("Session expired! Please login again.");
+                    checkAuth(); // Force re-login
                 } else {
-                      alert("FAILED! " + data.error);
-                 }
+                    alert("FAILED! " + (data.error || "Unknown error"));
+                }
               } else {
                 alert("Booked successfully!");
-                // Visually transition to booked state upon success
                 currentTd.className = `${baseClasses} bg-rose-500/10 text-rose-500/60 border border-rose-500/20 cursor-not-allowed`;
                 currentTd.innerHTML = `
                             <span class="relative z-10">${id}</span>
@@ -262,27 +275,13 @@ checkAuth()
                         `;
               }
             } catch (ex) {
-              alert("error booking " + ex);
+              alert("Error booking: " + ex);
             }
           });
           tr.appendChild(td);
           tbl.appendChild(tr);
         }
       }
-      // run();
     </script>
   </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-

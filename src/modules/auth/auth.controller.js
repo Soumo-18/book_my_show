@@ -16,6 +16,7 @@ export const login = async(req,res,next)=>{
         res.cookie('accessToken', accessToken, {
             httpOnly :true,
             secure:process.env.NODE_ENV === 'production',
+            sameSite:'strict',
             maxAge: 24*60*60*1000 //For 1 day
         })
         return ApiResponse.ok(res, 'Login Successful', {user})

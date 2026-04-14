@@ -8,7 +8,16 @@ export const getSeats= async(req,res)=>{
 
 export const bookSeat = async(req,res,next)=>{
     try{
-        const { id: seatId, name: userName } = req.params
+        const {id: seatId} = req.params // from the url
+        const { name:userName} = req.body 
+
+        if(!/^\d+$/.test(seatId)){
+            throw ApiError.badRequest("Invalid Seat Id. It Must be a Number")
+        }
+        if(!userName || userName.trim().length ===0  ){
+            throw ApiError.badRequest("A Valid Name is Required to Book a Seat")
+        }
+
         const result = await bookingService.bookSeat(seatId, req.user.id, userName)
         res.status(200).send(result)
     } catch(error) {

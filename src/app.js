@@ -10,7 +10,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin:process.env.CLIENT_URL,
+    credentials:true,
+}));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
 
@@ -18,7 +21,7 @@ app.get('/',(req,res)=>{
     res.sendFile(path.join(__dirname, '../index.html'))
 })
 app.use('/api/auth', authRoutes);
-app.use('/', bookingRoutes);
+app.use('/api/seats', bookingRoutes);
 
 app.use((err,req,res,next)=> {
     const statusCode = err.statusCode || 500

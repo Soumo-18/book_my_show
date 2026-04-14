@@ -24,7 +24,10 @@ export const bookSeat = async(seatId, userId, userName) =>{
         return {success:true, seatId}
     } catch (err) {
         await conn.query("ROLLBACK")
-        throw err
+        if(err.isOperational) {
+            throw err
+        }
+        throw ApiError.badRequest("Booking Failed due to System Error")
         
     } finally {
         conn.release()

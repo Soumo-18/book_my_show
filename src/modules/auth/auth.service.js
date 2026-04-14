@@ -40,8 +40,8 @@ export const login = async({email,password}) =>{
         id:user.id, 
         email:user.email
     },
-    process.env.JWT_SECRET || 'fallback_secret',
-    {expiresIn:'1d'}
+    process.env.JWT_ACCESS_SECRET,
+    {expiresIn: process.env.JWT_ACCESS_EXPIRES_IN ||'1d'}
 )
 delete user.password
 return { user, accessToken}

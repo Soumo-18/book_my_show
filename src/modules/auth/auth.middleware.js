@@ -8,7 +8,7 @@ export const authenticate = async(req,res,next) =>{
             throw ApiError.unauthorized('Not authenticated')
         }
 
-        const decoded = jwt.verify(token,process.env.JWT_SECRET || 'fallback_secret')
+        const decoded = jwt.verify(token,process.env.JWT_ACCESS_SECRET)
 
         req.user = decoded
         next()

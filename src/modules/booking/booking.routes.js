@@ -5,11 +5,11 @@ import { authenticate } from "../auth/auth.middleware.js";
 const router = Router()
 
 //GET -> /seats
-router.get('/seats', controller.getSeats)
+router.get('/', controller.getSeats)
 
 // PUT -> /:id/:name Protected 
 
-router.put('/:id/:name', authenticate, controller.bookSeat);
+router.put('/:id', authenticate, controller.bookSeat);
 
 
 
